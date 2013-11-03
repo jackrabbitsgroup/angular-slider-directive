@@ -18,8 +18,8 @@ config(['$routeProvider', '$locationProvider', '$compileProvider', function($rou
 	
 	// var staticPath ='/';
 	var staticPath;
-	staticPath ='/angular-directives/angular-slider-directive/';		//local
-	// staticPath ='/angular-slider-directive/';		//gh-pages
+	staticPath ='/test/angular-yo/';		//local
+	staticPath ='/angular-slider-directive/';		//gh-pages
 	var appPathRoute ='/';
 	var pagesPath =staticPath+'pages/';
 	
