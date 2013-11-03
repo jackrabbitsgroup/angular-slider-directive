@@ -1,15 +1,15 @@
 # AngularJS slider directive
 
-[TODO - brief summary]
-
 ## Demo
 http://jackrabbitsgroup.github.io/angular-slider-directive/
 
 ## Dependencies
 - required:
-	[TODO]
+	- Angular
+	- Jquery
+	- Lesshat
 - optional
-	[TODO]
+	- None
 
 See `bower.json` and `index.html` in the `gh-pages` branch for a full list / more details
 
