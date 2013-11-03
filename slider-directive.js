@@ -379,7 +379,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
-				template_html += "<div ng-repeat = 'handle in handles' id = '{{slider_id}}Handle{{$index}}' ng-mousedown = 'startHandleDrag($index); $event.preventDefault()' class = '{{handle_class}}' ng-style = '{\"z-index\": handle.zindex, \"left\": handle.left + \"%\", \"position\": \"absolute\"}' ng-bind-html-unsafe = 'handle.innerhtml'></div>";
+				template_html += "<div ng-repeat = 'handle in handles' id = '{{slider_id}}Handle{{$index}}' ng-mousedown = 'startHandleDrag($index); $event.preventDefault()' class = '{{handle_class}}' ng-style = '{\"z-index\": handle.zindex, \"left\": handle.left + \"%\", \"position\": \"absolute\"}' ng-bind-html = 'handle.innerhtml'></div>";
 				template_html += "<div ng-repeat = 'interior in interiors' class = '{{interior_bg_class}}' ng-style = '{\"left\": interior.left + \"%\", \"width\": interior.width + \"%\", \"position\": \"absolute\"}'> </div>";
 				template_html += "<div class = '{{right_bg_class}}' ng-style = '{\"width\": right_bg_width + \"%\", \"position\": \"absolute\", \"right\": \"0%\"}'> </div>";
 				template_html += "<div>";			//Dummy div to wrap ticks, so nth-of-type selectors will work (they ought to work without the wrapper, but don't)
@@ -1364,7 +1364,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						return 0;
 					}
 					//In the other two quadrants, the x value should be smaller than the offset, else we're off the slider.
-					else if(x_new >= slider_offset.x)
+					else if(scope.rotate > 90 && scope.rotate < -90 && x_new >= slider_offset.x)
 					{
 						return 0;
 					}

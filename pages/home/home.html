@@ -1,4 +1,39 @@
-<div ng-controller='HomeCtrl'>	
-	<jrg-slider-directive slider-id = 'my-slider' slider-handle-variable = 'my_var' slider-opts = 'opts'> </jrg-slider-directive>
-	{{my_var}}
+<div ng-controller='HomeCtrl'>
+	A simple slider with all options set to default<br/>
+	Handle Value: {{my_var1[0]}}
+	<jrg-slider-directive slider-id = 'my-slider1' slider-handle-variable = 'my_var1' slider-opts = 'opts1'> </jrg-slider-directive>
+	<br/>
+	<br/>
+	A slider with two handles, 5 decimal precision, some ticks displayed, and a squared scaling function.<br/>
+	Handle Values: {{my_var2}}
+	<jrg-slider-directive slider-id = 'my-slider2' slider-handle-variable = 'my_var2' slider-opts = 'opts2'> </jrg-slider-directive>
+	<br/>
+	<br/>
+	An increment slider in units of 3.<br/>
+	Handle Value: {{my_var3[0]}}
+	<jrg-slider-directive slider-id = 'my-slider3' slider-handle-variable = 'my_var3' slider-opts = 'opts3'> </jrg-slider-directive>
+	<br/>
+	<br/>
+	A continuous power-of-ten increment slider via a negative precision.<br/>
+	Handle Value: {{my_var4[0]}}
+	<jrg-slider-directive slider-id = 'my-slider4' slider-handle-variable = 'my_var4' slider-opts = 'opts4'> </jrg-slider-directive>
+	<br/>
+	<br/>
+	A slider with 2 decimal precision, rotated -3 degrees and with the maximum value on the left via an inverted scaling function.<br/>
+	Handle Value: {{my_var5[0]}}
+	<jrg-slider-directive slider-id = 'my-slider5' slider-handle-variable = 'my_var5' slider-opts = 'opts5'> </jrg-slider-directive>
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	A slider with 3 handles and user-defined values.<br/>
+	Handle Values: {{my_var6[0]}}, {{my_var6[1]}}, {{my_var6[2]}}
+	<jrg-slider-directive slider-id = 'my-slider6' slider-handle-variable = 'my_var6' slider-opts = 'opts6'> </jrg-slider-directive>
+	<br/>
+	<br/>
+	A slider with the value displayed inside the handle. You could, of course, define your own handle classes to better format the display.<br/>
+	Handle Values: {{my_var7[0]}}
+	<jrg-slider-directive slider-id = 'my-slider7' slider-handle-variable = 'my_var7' slider-opts = 'opts7'> </jrg-slider-directive>
+	<br/>
+	<br/>
 </div>
