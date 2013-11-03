@@ -1,5 +1,13 @@
 # AngularJS slider directive
 
+- Features:
+	- Allows arbitrarily many handles
+	- Fully customizable styles. You may overwrite the default element classes and replace them with whatever you like.
+	- Supports both increment and continuous sliders
+	- Users may define their own values. You are not restricted to numbers only.
+	- Users may define their own scaling functions. You are not restricted to linear sliders.
+	- Users may rotate their sliders, allowing for vertical or slanted sliders.
+	
 ## Demo
 http://jackrabbitsgroup.github.io/angular-slider-directive/
 
