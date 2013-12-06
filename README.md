@@ -27,7 +27,7 @@ See `bower.json` and `index.html` in the `gh-pages` branch for a full list / mor
 		1. add `"angular-slider-directive": "latest"` to your `bower.json` file then run `bower install` OR run `bower install angular-slider-directive`
 2. include the files in your app
 	1. `slider-directive.min.js`
-	2. `slider-directive.less`
+	2. `slider-directive.less` OR `slider-directive.min.css`
 3. include the module in angular (i.e. in `app.js`) - `jackrabbitsgroup.angular-slider-directive`
 
 See the `gh-pages` branch, files `bower.json` and `index.html` for a full example.
