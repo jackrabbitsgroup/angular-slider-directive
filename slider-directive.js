@@ -1007,20 +1007,21 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							(function(index)			//wrap in anonymous function to get a local copy of the counter
 							{
 								var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
-								handle_ele.unbind('touchstart');		//Remove any previous events before adding a new one
-								handle_ele.bind('touchstart', function()
+								
+								handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
+								handle_ele.addEventListener('touchstart', function()
 								{
 									scope.$apply(function()
 									{
 										scope.startHandleDrag(index);
 									});
-								});
+								}, false);
 							})(ii);
 						}
 						
 						var slider_ele = document.getElementById(scope.slider_id);
-						slider_ele.unbind('touchmove');				//Remove any previous events before adding a new one
-						slider_ele.bind('touchmove', function(event)
+						slider_ele.ontouchmove = null;				//Remove any previous events before adding a new one
+						slider_ele.addEventListener('touchmove', function(event)
 						{
 							event.preventDefault();					//? Maybe prevents default phone touchmove stuff, like scrolling?
 							var touch = event.originalEvent;		//? Apparently Iphones do weird stuff; make sure we have original event.
@@ -1028,7 +1029,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							{
 								scope.mousemoveHandler(touch);
 							});
-						});
+						}, false);
 					}
 				};
 				
@@ -1185,9 +1186,10 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				if(scope.slider_moveable === true || slider_init === false)
 				{
 					var bar = document.getElementById(scope.slider_id + "SliderBar");
-					slider_width = bar.outerWidth;
-					slider_offset.x = bar.offsetLeft;
-					slider_offset.y = bar.offsetTop;
+					slider_width = bar.offsetWidth;
+					var rect = bar.getBoundingClientRect();
+					slider_offset.x = rect.left;
+					slider_offset.y = rect.top;
 					
 					//When in the bottom two quadrants, the y offset needs to be mirrored (it gets reported as being in the top 2)
 					if(scope.rotate < 0)
@@ -1767,13 +1769,13 @@ each with a unique id, without ever refreshing the page.
 			var thisObj = this;
 			
 			//Set mouseup function to end dragging
-			document.body.bind('mouseup', function(event)
+			window.addEventListener('mouseup', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
 			});
 			
 			//Set touch events for phones		
-			document.body.bind('touchend', function(event)
+			window.addEventListener('touchend', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
 			});
