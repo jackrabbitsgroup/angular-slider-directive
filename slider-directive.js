@@ -990,7 +990,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				//initTouch: Function wrapper for timeout - waits until angular applies ids to elements, then sets up jquery touch events
 				var initTouch = function()
 				{
-					if($('#' + scope.slider_id + 'Handle' + 0).length <= 0)
+					if(!document.getElementById(scope.slider_id + 'Handle0'))
 					{
 						setTimeout(function()
 						{
@@ -1006,7 +1006,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						{
 							(function(index)			//wrap in anonymous function to get a local copy of the counter
 							{
-								var handle_ele = $('#' + scope.slider_id + 'Handle' + index);
+								var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
 								handle_ele.unbind('touchstart');		//Remove any previous events before adding a new one
 								handle_ele.bind('touchstart', function()
 								{
@@ -1018,7 +1018,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							})(ii);
 						}
 						
-						var slider_ele = $('#' + scope.slider_id);
+						var slider_ele = document.getElementById(scope.slider_id);
 						slider_ele.unbind('touchmove');				//Remove any previous events before adding a new one
 						slider_ele.bind('touchmove', function(event)
 						{
@@ -1184,10 +1184,10 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			{
 				if(scope.slider_moveable === true || slider_init === false)
 				{
-					var bar = $('#' + scope.slider_id + "SliderBar");
-					slider_width = bar.outerWidth();
-					slider_offset.x = bar.offset().left;
-					slider_offset.y = bar.offset().top;
+					var bar = document.getElementById(scope.slider_id + "SliderBar");
+					slider_width = bar.outerWidth;
+					slider_offset.x = bar.offsetLeft;
+					slider_offset.y = bar.offsetTop;
 					
 					//When in the bottom two quadrants, the y offset needs to be mirrored (it gets reported as being in the top 2)
 					if(scope.rotate < 0)
@@ -1617,10 +1617,10 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			
 			//Set up jquery
 			//Use document.ready, not scope.$on('viewContentLoaded'), because apparently viewContentLoaded doesn't always fire.
-			$(document).ready(function()
+			document.ready = function()
 			{
 				setJqueryTouch();
-			});
+			};
 			
 			
 			//Set up Interface
@@ -1767,13 +1767,13 @@ each with a unique id, without ever refreshing the page.
 			var thisObj = this;
 			
 			//Set mouseup function to end dragging
-			$('body').bind('mouseup', function(event)
+			document.body.bind('mouseup', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
 			});
 			
 			//Set touch events for phones		
-			$('body').bind('touchend', function(event)
+			document.body.bind('touchend', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
 			});
