@@ -375,7 +375,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 	var template_html = '';
 
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
-	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}<br/>offx:{{offx}}<br/>offy:{{offy}}<br/>m1:{{m1}}<br/>b1:{{b1}}<br/>barwidth:{{barwidth}}<br/>handlemoves: {{handlemoves}}<br/>newleft: {{newleft}}</div>";
+	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}<br/>handlemoves: {{handlemoves}}<br/>newleft: {{newleft}}<br/>xcoord: {{xcoord}}<br/>ycoord: {{ycoord}}<br/>eventprops: {{eventprops}}</div>";
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
@@ -1223,14 +1223,11 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						//We don't need b1 in those cases, so don't waste time trying to compute it.
 						slider_offset.b1 = (-1 * slider_offset.m1 * slider_offset.x) + slider_offset.y;
 					}
-					scope.offy = slider_offset.y;
-					scope.offx = slider_offset.x;
-					scope.barwidth = slider_width;
-					scope.m1 = slider_offset.m1;
-					scope.b1 = slider_offset.b1;
+
 					slider_init = true;
 				}
 			};
+			
 			scope.newleft = 0;
 			scope.barclicks = 0;
 			//*******************************************************************************************
@@ -1246,7 +1243,11 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					var x_coord = event.pageX;
 					var y_coord = event.pageY;
 					var new_left = convertMouseToSliderPercent(x_coord, y_coord);
-					
+					scope.xcoord = x_coord;
+					scope.ycoord = y_coord;
+					scope.eventprops = '';
+					var xx;
+					for(xx in event) { scope.eventprops += xx;}
 					//Check and handle increments
 					if(scope.increment !== 0 && scope.increment !== undefined)
 					{
@@ -1399,7 +1400,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 			};
 			
-			scope.handlemoves = 0;
 			//*******************************************************************************************
 			//moveHandle: Takes a handle index and left% and moves that handle to that position. Takes care of all error checking.
 			// -Disallows movement beyond slider edges (stops at edge)
@@ -1408,7 +1408,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			// This function is the ONLY way to move a handle, change its value, etc.
 			
 			var moveHandle = function(handle_index, new_left)
-			{scope.handlemoves++;
+			{
 				//if we've moved beyond the next handle, stop there.
 				if((handle_index < (scope.num_handles - 1)) && (new_left > scope.handles[handle_index+1].left))
 				{
