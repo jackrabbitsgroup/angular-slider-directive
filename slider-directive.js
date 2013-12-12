@@ -375,7 +375,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 	var template_html = '';
 
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
-	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}<br/>handlemoves: {{handlemoves}}<br/>newleft: {{newleft}}<br/>xcoord: {{xcoord}}<br/>ycoord: {{ycoord}}<br/>eventprops: {{eventprops}}</div>";
+	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}<br/>handlemoves: {{handlemoves}}<br/>newleft: {{newleft}}<br/>xcoord: {{xcoord}}<br/>ycoord: {{ycoord}}</div>";
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
@@ -1008,24 +1008,22 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							{
 								var handle_ele = $('#' + scope.slider_id + 'Handle' + index);
 								// var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
-								handle_ele.unbind('touchstart');    //Remove any previous events before adding a new one
 								// handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
+								handle_ele.unbind('touchstart');    //Remove any previous events before adding a new one
 								handle_ele.bind('touchstart', function()								
 								// handle_ele.addEventListener('touchstart', function(event)
-								{
+								{scope.touchstarts++;
 									event.preventDefault();							//? Maybe prevents default phone touchmove stuff, like scrolling?
 									var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
 									if(scope.$$phase === undefined)
 									{
 										scope.$apply(function()
 										{
-											scope.touchstarts++;
 											scope.startHandleDrag(index);
 										});
 									}
 									else
 									{
-										scope.touchstarts++;
 										scope.startHandleDrag(index);
 									}
 								});
@@ -1265,9 +1263,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					var new_left = convertMouseToSliderPercent(x_coord, y_coord);
 					scope.xcoord = x_coord;
 					scope.ycoord = y_coord;
-					scope.eventprops = '';
-					var xx;
-					for(xx in event) { scope.eventprops += xx;}
+					
 					//Check and handle increments
 					if(scope.increment !== 0 && scope.increment !== undefined)
 					{
@@ -1478,11 +1474,11 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			//*******************************************************************************************
 			//endHandleDrag: mouseup handler for everything. Stops the mousemove event on the container, ending the handle drag.
 			var endHandleDrag = function()
-			{
+			{scope.dragends++;
 				var endHandleDragHelper = function()
 				{
 					if(dragging === true)
-					{scope.dragends++;
+					{
 						dragging = false;
 						jrgSliderService.deactivate();		//Dragging finished. Deactivate in the service
 					
@@ -1804,8 +1800,7 @@ each with a unique id, without ever refreshing the page.
 				thisObj.clickHandler(thisObj, event);
 			});
 			
-			//Set touch events for phones
-			// window.addEventListener('touchend', function(event)
+			//Set touch events for phones		
 			$(window).bind('touchend', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
