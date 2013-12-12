@@ -374,10 +374,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 {
 	var template_html = '';
 
-	
-	
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
-		template_html += "<div> touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>barwidth: {{barwidth}}<br/>offx: {{offx}}<br/>offy: {{offy}} </div>";
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
@@ -986,8 +983,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				
 			};	//End setTicks
 			
-			scope.touchstarts = 0;
-			scope.touchmoves = 0;
 			var setJqueryTouch = function()
 			{			
 				//initTouch: Function wrapper for timeout - waits until angular applies ids to elements, then sets up jquery touch events
@@ -1009,23 +1004,27 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						{
 							(function(index)			//wrap in anonymous function to get a local copy of the counter
 							{
-								var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
-								
-								handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
-								handle_ele.addEventListener('touchstart', function()
+								var handle_ele = $('#' + scope.slider_id + 'Handle' + index);
+								// var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
+								handle_ele.unbind('touchstart');    //Remove any previous events before adding a new one
+								// handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
+								handle_ele.bind('touchstart', function()								
+								// handle_ele.addEventListener('touchstart', function(event)
 								{
 									scope.$apply(function()
 									{
-										scope.touchstarts++;
 										scope.startHandleDrag(index);
 									});
 								}, false);
 							})(ii);
 						}
 						
-						var slider_ele = document.getElementById(scope.slider_id);
-						slider_ele.ontouchmove = null;				//Remove any previous events before adding a new one
-						slider_ele.addEventListener('touchmove', function(event)
+						var slider_ele = $('#' + scope.slider_id);
+						// var slider_ele = document.getElementById(scope.slider_id);
+						slider_ele.unbind('touchmove');        		//Remove any previous events before adding a new one
+						// slider_ele.ontouchmove = null;				//Remove any previous events before adding a new one
+						slider_ele.bind('touchmove', function(event)						
+						// slider_ele.addEventListener('touchmove', function(event)
 						{
 							event.preventDefault();					//? Maybe prevents default phone touchmove stuff, like scrolling?
 							var touch = event.originalEvent;		//? Apparently Iphones do weird stuff; make sure we have original event.
@@ -1034,7 +1033,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 								scope.touchmoves++;
 								scope.mousemoveHandler(touch);
 							});
-						}, false);
+						});
+						// }, false);
 					}
 				};
 				
@@ -1183,9 +1183,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				return angle;
 			};
 			
-			scope.offx = 0;
-			scope.offy = 0;
-			scope.barwidth = 0;
 			//*******************************************************************************************
 			//initSliderOffsets: handles jquery that gets slider's offset and width.
 			//Should be called at the start of every mouse interaction event with the slider
@@ -1193,15 +1190,16 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			{
 				if(scope.slider_moveable === true || slider_init === false)
 				{
-					var bar = document.getElementById(scope.slider_id + "SliderBar");
-					slider_width = bar.offsetWidth;
-					var rect = bar.getBoundingClientRect();
-					slider_offset.x = rect.left;
-					slider_offset.y = rect.top;
+					// var bar = document.getElementById(scope.slider_id + "SliderBar");
+					// slider_width = bar.offsetWidth;
+					// var rect = bar.getBoundingClientRect();
+					// slider_offset.x = rect.left;
+					// slider_offset.y = rect.top;
 					
-					scope.offx = slider_offset.x;
-					scope.offy = slider_offset.y;
-					scope.barwidth = slider_width;
+					var bar = $('#' + scope.slider_id + "SliderBar");
+					slider_width = bar.outerWidth();
+					slider_offset.x = bar.offset().left;
+					slider_offset.y = bar.offset().top;					
 					
 					//When in the bottom two quadrants, the y offset needs to be mirrored (it gets reported as being in the top 2)
 					if(scope.rotate < 0)
@@ -1221,7 +1219,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						//We don't need b1 in those cases, so don't waste time trying to compute it.
 						slider_offset.b1 = (-1 * slider_offset.m1 * slider_offset.x) + slider_offset.y;
 					}
-					
 					
 					slider_init = true;
 				}
@@ -1786,8 +1783,9 @@ each with a unique id, without ever refreshing the page.
 				thisObj.clickHandler(thisObj, event);
 			});
 			
-			//Set touch events for phones		
-			window.addEventListener('touchend', function(event)
+			//Set touch events for phones
+			// window.addEventListener('touchend', function(event)
+			$(window).bind('touchend', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
 			});
