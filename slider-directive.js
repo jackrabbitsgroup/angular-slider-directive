@@ -1013,12 +1013,23 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 								handle_ele.bind('touchstart', function()								
 								// handle_ele.addEventListener('touchstart', function(event)
 								{
-									scope.$apply(function()
+									event.preventDefault();							//? Maybe prevents default phone touchmove stuff, like scrolling?
+									var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
+									if(scope.$$phase === undefined)
+									{
+										scope.$apply(function()
+										{
+											scope.touchstarts++;
+											scope.startHandleDrag(index);
+										});
+									}
+									else
 									{
 										scope.touchstarts++;
 										scope.startHandleDrag(index);
-									});
-								}, false);
+									}
+								});
+								// }, false);
 							})(ii);
 						}
 						
@@ -1030,12 +1041,21 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						// slider_ele.addEventListener('touchmove', function(event)
 						{
 							event.preventDefault();					//? Maybe prevents default phone touchmove stuff, like scrolling?
-							var touch = event.originalEvent;		//? Apparently Iphones do weird stuff; make sure we have original event.
-							scope.$apply(function()
+							var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
+							
+							if(scope.$$phase === undefined)
+							{
+								scope.$apply(function()
+								{
+									scope.touchmoves++;
+									scope.mousemoveHandler(touch);
+								});
+							}
+							else
 							{
 								scope.touchmoves++;
 								scope.mousemoveHandler(touch);
-							});
+							}
 						});
 						// }, false);
 					}
@@ -1324,16 +1344,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				var x_coord;
 				var y_coord;
 				
-				if(event.touches && event.touches.length)		//If touch event
-				{
-					x_coord = event.touches[0].pageX;
-					y_coord = event.touches[0].pageY;
-				}
-				else			//If mouse drag event
-				{
-					x_coord = event.pageX;
-					y_coord = event.pageY;
-				}
+				x_coord = event.pageX;
+				y_coord = event.pageY;
 				
 				var new_left = convertMouseToSliderPercent(x_coord, y_coord);
 				
