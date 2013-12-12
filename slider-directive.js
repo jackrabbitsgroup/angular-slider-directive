@@ -375,6 +375,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 	var template_html = '';
 
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
+	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}</div>";
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
@@ -982,7 +983,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 				
 			};	//End setTicks
-			
+			scope.touchstarts = 0;
+			scope.touchmoves = 0;
 			var setJqueryTouch = function()
 			{			
 				//initTouch: Function wrapper for timeout - waits until angular applies ids to elements, then sets up jquery touch events
@@ -1013,6 +1015,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 								{
 									scope.$apply(function()
 									{
+										scope.touchstarts++;
 										scope.startHandleDrag(index);
 									});
 								}, false);
@@ -1030,6 +1033,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							var touch = event.originalEvent;		//? Apparently Iphones do weird stuff; make sure we have original event.
 							scope.$apply(function()
 							{
+								scope.touchmoves++;
 								scope.mousemoveHandler(touch);
 							});
 						});
@@ -1223,11 +1227,12 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 			};
 			
-			
+			scope.barclicks = 0;
 			//*******************************************************************************************
 			//barClickHandler: click handler for slide bar container. Moves the nearest handle to match the mouse's x-coordinate.
 			scope.barClickHandler = function(event)
 			{
+				scope.barclicks++;
 				//Do nothing unless we aren't dragging a handle
 				if(scope.recent_dragging === false)
 				{
@@ -1452,7 +1457,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				update_zindex(handle_index);
 			};
 			
-			
+			scope.dragends = 0;
 			//*******************************************************************************************
 			//endHandleDrag: mouseup handler for everything. Stops the mousemove event on the container, ending the handle drag.
 			var endHandleDrag = function()
@@ -1460,7 +1465,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				var endHandleDragHelper = function()
 				{
 					if(dragging === true)
-					{
+					{scope.dragends++;
 						dragging = false;
 						jrgSliderService.deactivate();		//Dragging finished. Deactivate in the service
 					
