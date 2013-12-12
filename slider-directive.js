@@ -374,6 +374,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 {
 	var template_html = '';
 
+	template_html = "<div> touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>barwidth: {{barwidth}}<br/>offx: {{offx}}<br/>offy: {{offy}} </div>";
+	
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
 		
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
@@ -984,7 +986,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				
 			};	//End setTicks
 			
-			
+			scope.touchstarts = 0;
+			scope.touchmoves = 0;
 			var setJqueryTouch = function()
 			{			
 				//initTouch: Function wrapper for timeout - waits until angular applies ids to elements, then sets up jquery touch events
@@ -1013,6 +1016,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 								{
 									scope.$apply(function()
 									{
+										scope.touchstarts++;
 										scope.startHandleDrag(index);
 									});
 								}, false);
@@ -1027,6 +1031,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							var touch = event.originalEvent;		//? Apparently Iphones do weird stuff; make sure we have original event.
 							scope.$apply(function()
 							{
+								scope.touchmoves++;
 								scope.mousemoveHandler(touch);
 							});
 						}, false);
@@ -1178,6 +1183,9 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				return angle;
 			};
 			
+			scope.offx = 0;
+			scope.offy = 0;
+			scope.barwidth = 0;
 			//*******************************************************************************************
 			//initSliderOffsets: handles jquery that gets slider's offset and width.
 			//Should be called at the start of every mouse interaction event with the slider
@@ -1190,6 +1198,10 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					var rect = bar.getBoundingClientRect();
 					slider_offset.x = rect.left;
 					slider_offset.y = rect.top;
+					
+					scope.offx = slider_offset.x;
+					scope.offy = slider_offset.y;
+					scope.barwidth = slider_width;
 					
 					//When in the bottom two quadrants, the y offset needs to be mirrored (it gets reported as being in the top 2)
 					if(scope.rotate < 0)
