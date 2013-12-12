@@ -375,7 +375,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 	var template_html = '';
 
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
-	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}<br/>offx:{{offx}}<br/>offy:{{offy}}<br/>m1:{{m1}}<br/>b1:{{b1}}<br/>barwidth:{{barwidth}}</div>";
+	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}<br/>offx:{{offx}}<br/>offy:{{offy}}<br/>m1:{{m1}}<br/>b1:{{b1}}<br/>barwidth:{{barwidth}}<br/>phase:{{$$phase}}</div>";
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
@@ -1186,11 +1186,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				return angle;
 			};
 			
-			scope.offy = 0;
-			scope.offx = 0;
-			scope.barwidth = 0;
-			scope.m1 = 0;
-			scope.b1 = 0;
+
 			//*******************************************************************************************
 			//initSliderOffsets: handles jquery that gets slider's offset and width.
 			//Should be called at the start of every mouse interaction event with the slider
