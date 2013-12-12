@@ -377,7 +377,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 	
 	
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
-		template_html = "<div> touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>barwidth: {{barwidth}}<br/>offx: {{offx}}<br/>offy: {{offy}} </div>";
+		template_html += "<div> touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>barwidth: {{barwidth}}<br/>offx: {{offx}}<br/>offy: {{offy}} </div>";
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
