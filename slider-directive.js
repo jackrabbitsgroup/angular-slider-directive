@@ -1021,7 +1021,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						
 						var slider_ele = $('#' + scope.slider_id);
 						// var slider_ele = document.getElementById(scope.slider_id);
-						slider_ele.unbind('touchmove');        		//Remove any previous events before adding a new one
+						slider_ele.unbind('touchmove');					//Remove any previous events before adding a new one
 						// slider_ele.ontouchmove = null;				//Remove any previous events before adding a new one
 						slider_ele.bind('touchmove', function(event)						
 						// slider_ele.addEventListener('touchmove', function(event)
@@ -1030,7 +1030,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							var touch = event.originalEvent;		//? Apparently Iphones do weird stuff; make sure we have original event.
 							scope.$apply(function()
 							{
-								scope.touchmoves++;
 								scope.mousemoveHandler(touch);
 							});
 						});
