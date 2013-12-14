@@ -1953,7 +1953,7 @@ each with a unique id, without ever refreshing the page.
 			var ii;
 			for(ii = 0; ii < integral.length; ii++)
 			{
-				if(integral[ii].exp == -1)			//Abort
+				if(integral[ii].exp === -1)			//Abort
 				{
 					console.log("ERROR: jrgPolynomial.integratePoly can't handle polynomials with an exponent = -1 term!");
 					return poly;
@@ -2060,7 +2060,7 @@ each with a unique id, without ever refreshing the page.
 				
 			var thisObj = this;
 			
-			if(!params || !params.poly || !params.guess)
+			if(params === undefined || params === null || params.poly === undefined || params.poly === null || params.guess === undefined || params.guess === null)
 			{
 				console.log("Error in jrgPolynomial.findPolyZeroNewton: params.poly and params.guess must be defined");
 				return {'err':true, 'val':0};	//Return error and a dummy value
@@ -2143,7 +2143,7 @@ each with a unique id, without ever refreshing the page.
 				
 			var thisObj = this;
 			
-			if(!params || !params.poly || !params.a || !params.b)
+			if(params === undefined || params === null || params.poly === undefined || params.poly === null || params.a === undefined || params.a === null || params.b === undefined || params.b === null)
 			{
 				console.log("Error in jrgPolynomial.findPolyZeroBisection: params.poly, params.a, and params.b must be defined");
 				return {'err':true, 'val':0};	//Return error and a dummy value
