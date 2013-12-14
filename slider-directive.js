@@ -1252,7 +1252,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				if(scope.recent_dragging === false)
 				{
 					initSliderOffsets();	//First must make sure slider offsets set
-					
+					console.log('barclickevent: ' + event);
 					var x_coord = event.pageX;
 					var y_coord = event.pageY;
 					var new_left = convertMouseToSliderPercent(x_coord, y_coord);
