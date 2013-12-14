@@ -984,7 +984,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			};	//End setTicks
 
 			var setJqueryTouch = function()
-			{			
+			{
 				//initTouch: Function wrapper for timeout - waits until angular applies ids to elements, then sets up jquery touch events
 				var initTouch = function()
 				{
@@ -1011,9 +1011,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 								handle_ele.bind('touchstart', function(event)
 								// handle_ele.addEventListener('touchstart', function(event)
 								{
-									console.log('touchstart phase: ' + scope.$$phase);
-									event.preventDefault();							//? Maybe prevents default phone touchmove stuff, like scrolling?
-									var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
+									event.preventDefault();							//? Maybe prevents default phone touch stuff, like scrolling?
+									//var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
 									if(scope.$$phase === undefined || scope.$$phase === null)
 									{
 										scope.$apply(function()
@@ -1037,7 +1036,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						slider_ele.bind('touchmove', function(event)						
 						// slider_ele.addEventListener('touchmove', function(event)
 						{
-							event.preventDefault();					//? Maybe prevents default phone touchmove stuff, like scrolling?
+							event.preventDefault();							//? Maybe prevents default phone touchmove stuff, like scrolling?
 							var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
 							
 							if(scope.$$phase === undefined || scope.$$phase === null)
@@ -1247,15 +1246,13 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			//barClickHandler: click handler for slide bar container. Moves the nearest handle to match the mouse's x-coordinate.
 			scope.barClickHandler = function(event)
 			{
-				console.log('barclick, recent_dragging: ' + scope.recent_dragging);
 				//Do nothing unless we aren't dragging a handle
 				if(scope.recent_dragging === false)
 				{
 					initSliderOffsets();	//First must make sure slider offsets set
-					console.log(event);
 					var x_coord;
 					var y_coord;
-					if(event.type.indexOf('touch') !== -1)
+					if(event.type.indexOf('touch') !== -1)		//If this is a touch event, coords are located in a different place
 					{
 						x_coord = event.changedTouches[0].pageX;
 						y_coord = event.changedTouches[0].pageY;
@@ -1266,7 +1263,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						y_coord = event.pageY;
 					}
 					var new_left = convertMouseToSliderPercent(x_coord, y_coord);
-					console.log('eventx: ' + x_coord + ', eventy: ' + y_coord + ', new_left: ' + new_left);
 					//Check and handle increments
 					if(scope.increment !== 0 && scope.increment)
 					{
@@ -1362,7 +1358,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			//Takes a mouse x coordinate and converts it to a left% on the slider. May return a % that is off the slider.
 			var convertMouseToSliderPercent = function(x_coord, y_coord)
 			{
-				console.log('convert, slider_offsetx: ' + slider_offset.x + ', slider_offsety: ' + slider_offset.y + ', x_coord: ' + x_coord + ', y_coord: ' + y_coord + ', width: ' + slider_width);
 				//Check horizontal slider first as a special case for an efficiency boost in this common use case,
 				//and also because the general calculation fails in this case due to undefined slopes.
 				if(scope.rotate === 0)
@@ -1478,7 +1473,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			//endHandleDrag: mouseup handler for everything. Stops the mousemove event on the container, ending the handle drag.
 			var endHandleDrag = function()
 			{
-				console.log('dragend, dragging: ' + dragging);
 				var endHandleDragHelper = function()
 				{
 					if(dragging === true)
