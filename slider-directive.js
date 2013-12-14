@@ -375,7 +375,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 	var template_html = '';
 
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
-	template_html += "<div> barclicks: {{barclicks}}<br/>touchstarts: {{touchstarts}}<br/>touchmoves: {{touchmoves}}<br/>dragends: {{dragends}}<br/>recentdragging: {{recent_dragging}}<br/>handlemoves: {{handlemoves}}<br/>newleft: {{newleft}}<br/>xcoord: {{xcoord}}<br/>ycoord: {{ycoord}}</div>";
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
@@ -983,8 +982,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 				
 			};	//End setTicks
-			scope.touchstarts = 0;
-			scope.touchmoves = 0;
+
 			var setJqueryTouch = function()
 			{			
 				//initTouch: Function wrapper for timeout - waits until angular applies ids to elements, then sets up jquery touch events
@@ -1012,7 +1010,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 								handle_ele.unbind('touchstart');    //Remove any previous events before adding a new one
 								handle_ele.bind('touchstart', function()								
 								// handle_ele.addEventListener('touchstart', function(event)
-								{scope.touchstarts++;
+								{
+									console.log('touchstart phase: ' + scope.$$phase);
 									event.preventDefault();							//? Maybe prevents default phone touchmove stuff, like scrolling?
 									var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
 									if(scope.$$phase === undefined)
@@ -1045,13 +1044,11 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							{
 								scope.$apply(function()
 								{
-									scope.touchmoves++;
 									scope.mousemoveHandler(touch);
 								});
 							}
 							else
 							{
-								scope.touchmoves++;
 								scope.mousemoveHandler(touch);
 							}
 						});
@@ -1246,13 +1243,11 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 			};
 			
-			scope.newleft = 0;
-			scope.barclicks = 0;
 			//*******************************************************************************************
 			//barClickHandler: click handler for slide bar container. Moves the nearest handle to match the mouse's x-coordinate.
 			scope.barClickHandler = function(event)
 			{
-				scope.barclicks++;
+				console.log('barclick, recent_dragging: ' + scope.recent_dragging);
 				//Do nothing unless we aren't dragging a handle
 				if(scope.recent_dragging === false)
 				{
@@ -1261,9 +1256,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					var x_coord = event.pageX;
 					var y_coord = event.pageY;
 					var new_left = convertMouseToSliderPercent(x_coord, y_coord);
-					scope.xcoord = x_coord;
-					scope.ycoord = y_coord;
-					
+					console.log('eventx: ' + x_coord + ', eventy: ' + y_coord + ', new_left: ' + new_left);
 					//Check and handle increments
 					if(scope.increment !== 0 && scope.increment !== undefined)
 					{
@@ -1298,7 +1291,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							handle_index = ii;
 						}
 					}
-					scope.newleft = new_left;
+					
 					moveHandle(handle_index, new_left);			//move handle to the new position
 					
 					if(scope.evt_mouseup !== '' && scope.evt_mouseup !== undefined) //need to fire user's mouseup event
@@ -1359,6 +1352,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			//Takes a mouse x coordinate and converts it to a left% on the slider. May return a % that is off the slider.
 			var convertMouseToSliderPercent = function(x_coord, y_coord)
 			{
+				console.log('convert, slider_offsetx: ' + slider_offset.x + ', slider_offsety: ' + slider_offset.y + ', x_coord: ' + x_coord + ', y_coord: ' + y_coord + ', width: ' + slider_width);
 				//Check horizontal slider first as a special case for an efficiency boost in this common use case,
 				//and also because the general calculation fails in this case due to undefined slopes.
 				if(scope.rotate === 0)
