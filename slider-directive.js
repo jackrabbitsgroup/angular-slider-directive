@@ -375,7 +375,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 	var template_html = '';
 
 	template_html += "<div id = '{{slider_id}}' ng-mousemove = 'mousemoveHandler($event); $event.preventDefault()' class = '{{container_class}}'>";
-		
 		template_html += "<div ng-click = 'barClickHandler($event)' class = '{{bar_container_class}}' ng-style = 'bar_container_style'>";
 			template_html += "<div id = '{{slider_id}}SliderBar' style = 'position:relative; width:100%;'>";
 				template_html += "<div class = '{{left_bg_class}}' ng-style = '{\"width\": left_bg_width + \"%\", \"position\": \"absolute\",  \"left\": \"0%\"}'> </div>";
@@ -562,7 +561,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				//Fill info
 				for(var xx in defaults)
 				{
-					if(scope.slider_opts[xx] === undefined)
+					if(scope.slider_opts[xx] === undefined || scope.slider_opts[xx] === null)
 					{
 						scope[xx] = defaults[xx];
 					}
@@ -589,7 +588,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				jrgSliderService.register(scope.slider_id, endHandleDrag);		//Register the slider with the service
 				
 				scope.initial_values = false;
-				if(scope.handle_values === undefined)
+				if(!scope.handle_values)
 				{
 					scope.use_array = parseBoolean(scope.use_array, defaults.use_array);	//Must parse before using.
 					if(scope.use_array === false)		//Arbitrarily treat single handle as special case, to bypass 1-element array.
@@ -664,17 +663,17 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				
 				user_values_flag = false;
 				//If set, parse values and re-define other values
-				if(scope.user_values !== '' && scope.user_values !== undefined)
+				if(scope.user_values !== '' && scope.user_values)
 				{
 					user_values_flag = true;
 					for(ii = 0; ii < scope.user_values.length; ii++)
 					{
-						if(scope.user_values[ii].val === undefined)		//If val is undefined, then the entry itself is the value.
+						if(scope.user_values[ii].val === undefined || scope.user_values[ii].val === null)		//If val is undefined, then the entry itself is the value.
 						{
 							var temp_val = scope.user_values[ii];
 							scope.user_values[ii] = {'val':temp_val, 'name':temp_val};
 						}
-						else if(scope.user_values[ii].name === undefined)
+						else if(scope.user_values[ii].name === undefined || scope.user_values[ii].name === null)
 						{
 							scope.user_values[ii].name = scope.user_values[ii].val;
 						}
@@ -854,7 +853,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 				
 				//Set up increments if necessary
-				if(scope.increment !== 0 && scope.increment !== undefined)		//If this is an increment slider
+				if(scope.increment !== 0 && scope.increment)		//If this is an increment slider
 				{
 					var cur_val = scope.slider_min;
 					for(ii=0; cur_val < scope.slider_max; ii++)
@@ -917,7 +916,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				{}		//Do nothing
 				else	//If the user pre-filled their handle values, need to move the handles accordingly.
 				{
-					if(evt_set_value === '' || evt_set_value === undefined)
+					if(evt_set_value === '' || evt_set_value === undefined || evt_set_value === null)
 					{
 						nameInterfaceEvents();	//Make sure the event name is set.
 					}
@@ -942,11 +941,11 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			{
 				for(var ii = 0; ii < scope.ticks_values.length; ii++)
 				{
-					if(scope.ticks_values[ii].val === undefined)		//If val is undefined, then the entry itself is the value.
+					if(scope.ticks_values[ii].val === undefined || scope.ticks_values[ii].val === null)		//If val is undefined, then the entry itself is the value.
 					{
 						scope.ticks[ii] = {'val':scope.ticks_values[ii], 'name': scope.units_pre + scope.ticks_values[ii] + scope.units_post};
 					}
-					else if(scope.ticks_values[ii].name === undefined)	//If val defined, name undefined
+					else if(scope.ticks_values[ii].name === undefined || scope.ticks_values[ii].name === null)	//If val defined, name undefined
 					{
 						scope.ticks[ii] = {'val':scope.ticks_values[ii].val, 'name': scope.units_pre + scope.ticks_values[ii].val + scope.units_post};
 					}
@@ -983,10 +982,9 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 				
 			};	//End setTicks
-			
-			
+
 			var setJqueryTouch = function()
-			{			
+			{
 				//initTouch: Function wrapper for timeout - waits until angular applies ids to elements, then sets up jquery touch events
 				var initTouch = function()
 				{
@@ -1006,30 +1004,54 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						{
 							(function(index)			//wrap in anonymous function to get a local copy of the counter
 							{
-								var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
-								
-								handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
-								handle_ele.addEventListener('touchstart', function()
+								var handle_ele = $('#' + scope.slider_id + 'Handle' + index);
+								// var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
+								// handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
+								handle_ele.unbind('touchstart');    //Remove any previous events before adding a new one
+								handle_ele.bind('touchstart', function(event)
+								// handle_ele.addEventListener('touchstart', function(event)
 								{
-									scope.$apply(function()
+									event.preventDefault();							//? Maybe prevents default phone touch stuff, like scrolling?
+									//var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
+									if(scope.$$phase === undefined || scope.$$phase === null)
+									{
+										scope.$apply(function()
+										{
+											scope.startHandleDrag(index);
+										});
+									}
+									else
 									{
 										scope.startHandleDrag(index);
-									});
-								}, false);
+									}
+								});
+								// }, false);
 							})(ii);
 						}
 						
-						var slider_ele = document.getElementById(scope.slider_id);
-						slider_ele.ontouchmove = null;				//Remove any previous events before adding a new one
-						slider_ele.addEventListener('touchmove', function(event)
+						var slider_ele = $('#' + scope.slider_id);
+						// var slider_ele = document.getElementById(scope.slider_id);
+						slider_ele.unbind('touchmove');					//Remove any previous events before adding a new one
+						// slider_ele.ontouchmove = null;				//Remove any previous events before adding a new one
+						slider_ele.bind('touchmove', function(event)						
+						// slider_ele.addEventListener('touchmove', function(event)
 						{
-							event.preventDefault();					//? Maybe prevents default phone touchmove stuff, like scrolling?
-							var touch = event.originalEvent;		//? Apparently Iphones do weird stuff; make sure we have original event.
-							scope.$apply(function()
+							event.preventDefault();							//? Maybe prevents default phone touchmove stuff, like scrolling?
+							var touch = event.originalEvent.touches[0];		//? Apparently Iphones do weird stuff; make sure we have original event.
+							
+							if(scope.$$phase === undefined || scope.$$phase === null)
+							{
+								scope.$apply(function()
+								{
+									scope.mousemoveHandler(touch);
+								});
+							}
+							else
 							{
 								scope.mousemoveHandler(touch);
-							});
-						}, false);
+							}
+						});
+						// }, false);
 					}
 				};
 				
@@ -1178,6 +1200,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				return angle;
 			};
 			
+
 			//*******************************************************************************************
 			//initSliderOffsets: handles jquery that gets slider's offset and width.
 			//Should be called at the start of every mouse interaction event with the slider
@@ -1185,11 +1208,16 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			{
 				if(scope.slider_moveable === true || slider_init === false)
 				{
-					var bar = document.getElementById(scope.slider_id + "SliderBar");
-					slider_width = bar.offsetWidth;
-					var rect = bar.getBoundingClientRect();
-					slider_offset.x = rect.left;
-					slider_offset.y = rect.top;
+					// var bar = document.getElementById(scope.slider_id + "SliderBar");
+					// slider_width = bar.offsetWidth;
+					// var rect = bar.getBoundingClientRect();
+					// slider_offset.x = rect.left;
+					// slider_offset.y = rect.top;
+					
+					var bar = $('#' + scope.slider_id + "SliderBar");
+					slider_width = bar.outerWidth();
+					slider_offset.x = bar.offset().left;
+					slider_offset.y = bar.offset().top;
 					
 					//When in the bottom two quadrants, the y offset needs to be mirrored (it gets reported as being in the top 2)
 					if(scope.rotate < 0)
@@ -1203,18 +1231,16 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					}
 					
 					//Compute slider's y-intercept (the b in y = mx + b)
-					if(slider_offset.m1 !== undefined)
+					if(slider_offset.m1)
 					{
 						//Recall that slider_offset.m1 will be defined iff the slider is neither horizontal nor vertical.
 						//We don't need b1 in those cases, so don't waste time trying to compute it.
 						slider_offset.b1 = (-1 * slider_offset.m1 * slider_offset.x) + slider_offset.y;
 					}
-					
-					
+
 					slider_init = true;
 				}
 			};
-			
 			
 			//*******************************************************************************************
 			//barClickHandler: click handler for slide bar container. Moves the nearest handle to match the mouse's x-coordinate.
@@ -1224,13 +1250,21 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				if(scope.recent_dragging === false)
 				{
 					initSliderOffsets();	//First must make sure slider offsets set
-					
-					var x_coord = event.pageX;
-					var y_coord = event.pageY;
+					var x_coord;
+					var y_coord;
+					if(event.type.indexOf('touch') !== -1)		//If this is a touch event, coords are located in a different place
+					{
+						x_coord = event.changedTouches[0].pageX;
+						y_coord = event.changedTouches[0].pageY;
+					}
+					else
+					{
+						x_coord = event.pageX;
+						y_coord = event.pageY;
+					}
 					var new_left = convertMouseToSliderPercent(x_coord, y_coord);
-					
 					//Check and handle increments
-					if(scope.increment !== 0 && scope.increment !== undefined)
+					if(scope.increment !== 0 && scope.increment)
 					{
 						new_left = findNearestIncrement(new_left);
 					}
@@ -1266,7 +1300,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					
 					moveHandle(handle_index, new_left);			//move handle to the new position
 					
-					if(scope.evt_mouseup !== '' && scope.evt_mouseup !== undefined) //need to fire user's mouseup event
+					if(scope.evt_mouseup !== '' && scope.evt_mouseup) //need to fire user's mouseup event
 					{
 						scope.$emit(scope.evt_mouseup, {'num_handles':scope.num_handles, 'handle':handle_index, 'id':scope.slider_id, 'value': scope.handles[handle_index].return_value});
 					}
@@ -1305,21 +1339,13 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				var x_coord;
 				var y_coord;
 				
-				if(event.touches && event.touches.length)		//If touch event
-				{
-					x_coord = event.touches[0].pageX;
-					y_coord = event.touches[0].pageY;
-				}
-				else			//If mouse drag event
-				{
-					x_coord = event.pageX;
-					y_coord = event.pageY;
-				}
+				x_coord = event.pageX;
+				y_coord = event.pageY;
 				
 				var new_left = convertMouseToSliderPercent(x_coord, y_coord);
 				
 				//Check and handle increments
-				if(scope.increment !== 0 && scope.increment !== undefined)
+				if(scope.increment !== 0 && scope.increment)
 				{
 					new_left = findNearestIncrement(new_left);
 				}			
@@ -1381,7 +1407,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 			};
 			
-			
 			//*******************************************************************************************
 			//moveHandle: Takes a handle index and left% and moves that handle to that position. Takes care of all error checking.
 			// -Disallows movement beyond slider edges (stops at edge)
@@ -1390,7 +1415,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			// This function is the ONLY way to move a handle, change its value, etc.
 			
 			var moveHandle = function(handle_index, new_left)
-			{				
+			{
 				//if we've moved beyond the next handle, stop there.
 				if((handle_index < (scope.num_handles - 1)) && (new_left > scope.handles[handle_index+1].left))
 				{
@@ -1444,7 +1469,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				update_zindex(handle_index);
 			};
 			
-			
 			//*******************************************************************************************
 			//endHandleDrag: mouseup handler for everything. Stops the mousemove event on the container, ending the handle drag.
 			var endHandleDrag = function()
@@ -1456,7 +1480,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						dragging = false;
 						jrgSliderService.deactivate();		//Dragging finished. Deactivate in the service
 					
-						if(scope.evt_mouseup !== '' && scope.evt_mouseup !== undefined) //if we were dragging a handle, then we need to fire the user's mouseup event, if it exists
+						if(scope.evt_mouseup !== '' && scope.evt_mouseup) //if we were dragging a handle, then we need to fire the user's mouseup event, if it exists
 						{
 							scope.$emit(scope.evt_mouseup, {'num_handles':scope.num_handles, 'handle':cur_handle, 'id':scope.slider_id, 'value': scope.handles[cur_handle].return_value});
 						}
@@ -1472,7 +1496,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					}
 				};
 				
-				if(scope.$$phase === undefined)
+				if(scope.$$phase === undefined || scope.$$phase === null)
 				{
 					scope.$apply(function()
 					{
@@ -1634,7 +1658,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					//handle				//Index of the handle whose value should be returned. Handles are zero-indexed and arranged in ascending order from left to right.
 				//Note: if params.handle isn't defined, the first handle's value will be returned.
 				var handle = 0;
-				if(params !== undefined && params.handle !== undefined)
+				if(params && params.handle)
 				{
 					handle = params.handle;
 				}
@@ -1662,7 +1686,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				//Note: if params.handle isn't defined, the first handle's value will be set.
 				
 				var handle = 0;
-				if(params !== undefined && params.handle !== undefined)
+				if(params && params.handle)
 				{
 					handle = params.handle;
 				}
@@ -1775,7 +1799,7 @@ each with a unique id, without ever refreshing the page.
 			});
 			
 			//Set touch events for phones		
-			window.addEventListener('touchend', function(event)
+			$(window).bind('touchend', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
 			});
@@ -1923,7 +1947,7 @@ each with a unique id, without ever refreshing the page.
 			var ii;
 			for(ii = 0; ii < integral.length; ii++)
 			{
-				if(integral[ii].exp == -1)			//Abort
+				if(integral[ii].exp === -1)			//Abort
 				{
 					console.log("ERROR: jrgPolynomial.integratePoly can't handle polynomials with an exponent = -1 term!");
 					return poly;
@@ -2030,7 +2054,7 @@ each with a unique id, without ever refreshing the page.
 				
 			var thisObj = this;
 			
-			if(params === undefined || params.poly === undefined || params.guess === undefined)
+			if(params === undefined || params === null || params.poly === undefined || params.poly === null || params.guess === undefined || params.guess === null)
 			{
 				console.log("Error in jrgPolynomial.findPolyZeroNewton: params.poly and params.guess must be defined");
 				return {'err':true, 'val':0};	//Return error and a dummy value
@@ -2041,12 +2065,12 @@ each with a unique id, without ever refreshing the page.
 				var guess = params.guess;
 				
 				var epsilon = 0.00001;					//Accuracy threshold. Tells algorithm how close to get to the real answer
-				if(params.epsilon !== undefined)
+				if(params.epsilon)
 				{
 					epsilon = params.epsilon;
 				}
 				var max_iterations = 50;
-				if(params.max_iterations !== undefined)
+				if(params.max_iterations)
 				{
 					max_iterations = params.max_iterations;
 				}
@@ -2113,7 +2137,7 @@ each with a unique id, without ever refreshing the page.
 				
 			var thisObj = this;
 			
-			if(params === undefined || params.poly === undefined || params.a === undefined || params.b === undefined)
+			if(params === undefined || params === null || params.poly === undefined || params.poly === null || params.a === undefined || params.a === null || params.b === undefined || params.b === null)
 			{
 				console.log("Error in jrgPolynomial.findPolyZeroBisection: params.poly, params.a, and params.b must be defined");
 				return {'err':true, 'val':0};	//Return error and a dummy value
@@ -2123,12 +2147,12 @@ each with a unique id, without ever refreshing the page.
 				var poly = params.poly;
 				
 				var epsilon = 0.0001;					//Accuracy threshold. Tells algorithm how close to get to the real answer
-				if(params.epsilon !== undefined)
+				if(params.epsilon)
 				{
 					epsilon = params.epsilon;
 				}
 				//var max_iterations = 100;
-				//if(params.max_iterations != undefined)
+				//if(params.max_iterations)
 				//{
 				//	max_iterations = params.max_iterations;
 				//}

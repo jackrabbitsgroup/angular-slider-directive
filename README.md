@@ -14,7 +14,7 @@ http://jackrabbitsgroup.github.io/angular-slider-directive/
 ## Dependencies
 - required:
 	- Angular
-	- Jquery
+	- Jquery (specifically, .offset() and .bind() functions)
 	- Lesshat
 - optional
 	- None
