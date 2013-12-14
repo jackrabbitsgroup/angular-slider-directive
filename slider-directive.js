@@ -1008,7 +1008,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 								// var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
 								// handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
 								handle_ele.unbind('touchstart');    //Remove any previous events before adding a new one
-								handle_ele.bind('touchstart', function()								
+								handle_ele.bind('touchstart', function(event)
 								// handle_ele.addEventListener('touchstart', function(event)
 								{
 									console.log('touchstart phase: ' + scope.$$phase);
@@ -1257,8 +1257,8 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					var y_coord;
 					if(event.type.indexOf('touch') !== -1)
 					{
-						x_coord = event.changedTocuhes[0].pageX;
-						x_coord = event.changedTocuhes[0].pageY;
+						x_coord = event.changedTouches[0].pageX;
+						x_coord = event.changedTouches[0].pageY;
 					}
 					else
 					{
