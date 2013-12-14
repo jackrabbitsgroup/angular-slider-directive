@@ -1258,7 +1258,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					if(event.type.indexOf('touch') !== -1)
 					{
 						x_coord = event.changedTouches[0].pageX;
-						x_coord = event.changedTouches[0].pageY;
+						y_coord = event.changedTouches[0].pageY;
 					}
 					else
 					{
