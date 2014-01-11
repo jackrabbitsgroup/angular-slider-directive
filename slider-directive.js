@@ -538,13 +538,25 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			};
 			
 			//Init the event name variables here so we don't get undefined reference errors. Will be properly set later.
-			var evt_get_value = '';
-			var evt_return_value = '';
-			var evt_get_all_values = '';
-			var evt_return_all_values = '';
-			var evt_set_value = '';
-			var evt_init_slider = '';
-			var evt_init_slider_finished = '';
+			var evt_names =
+			{
+				'evt_get_value': '',
+				'evt_return_value': '',
+				'evt_get_all_values': '',
+				'evt_return_all_values': '',
+				'evt_set_value': '',
+				'evt_init_slider': '',
+				'evt_init_slider_finished': ''
+			};
+
+			//Holds functions that deregister the event listeners. Initialize to blank functions here.
+			var evt_deregister =
+			{
+				'evt_get_value': function() {},
+				'evt_get_all_values': function() {},
+				'evt_set_value': function() {},
+				'evt_init_slider': function() {},
+			};
 			
 			scale_function_poly = jrgPolynomial.stringToPoly('[1, 1]');	//Init to identity, avoid undefined errors.
 			
@@ -584,7 +596,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					}
 				}
 				
-				nameInterfaceEvents();						//Set the event names
+				setInterfaceEvents();						//Set the events
 				jrgSliderService.register(scope.slider_id, endHandleDrag);		//Register the slider with the service
 				
 				scope.initial_values = false;
@@ -640,7 +652,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 				else
 				{
-					scope.$emit(evt_init_slider_finished, {'id':scope.slider_id, 'values':scope.handle_values});
+					scope.$emit(evt_names.evt_init_slider_finished, {'id':scope.slider_id, 'values':scope.handle_values});
 				}
 			};
 			
@@ -916,9 +928,9 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				{}		//Do nothing
 				else	//If the user pre-filled their handle values, need to move the handles accordingly.
 				{
-					if(evt_set_value === '' || evt_set_value === undefined || evt_set_value === null)
+					if(evt_names.evt_set_value === '' || evt_names.evt_set_value === undefined || evt_names.evt_set_value === null)
 					{
-						nameInterfaceEvents();	//Make sure the event name is set.
+						setInterfaceEvents();	//Make sure the event name is set.
 					}
 				
 					for(ii=0; ii < scope.num_handles; ii++)		//Go through each handle, set it using the normal set function, just like set event listener
@@ -1626,16 +1638,82 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			};
 
 			//*******************************************************************************************
-			//nameInterfaceEvents: sets the names for the events. Should be called whenever scope.slider_id changes.
-			var nameInterfaceEvents = function()
+			//setInterfaceEvents: set up the events. Should be called whenever scope.slider_id changes.
+			var setInterfaceEvents = function()
 			{
-				evt_get_value = 'evtSliderGetValue' + scope.slider_id;					//The event you must broadcast to read a value from this slider.
-				evt_return_value = 'evtSliderReturnValue' + scope.slider_id;			//The event you must listen for to read a value from this slider.
-				evt_get_all_values = 'evtSliderGetAllValues' + scope.slider_id;			//The event you must broadcast to read all values from this slider.
-				evt_return_all_values = 'evtSliderReturnAllValues' + scope.slider_id;	//The event you must listen for to read all values from this slider.
-				evt_set_value = 'evtSliderSetValue' + scope.slider_id;					//The event you must broadcast to set a value on the slider
-				evt_init_slider = 'evtInitSlider' + scope.slider_id;					//The event you must broadcast to re-initialize the slider.
-				evt_init_slider_finished = 'evtSliderInitialized' + scope.slider_id;	//This event is emitted when the slider is done initializing.
+				//Set up the new event names
+				evt_names.evt_get_value = 'evtSliderGetValue' + scope.slider_id;				//The event you must broadcast to read a value from this slider.
+				evt_names.evt_return_value = 'evtSliderReturnValue' + scope.slider_id;			//The event you must listen for to read a value from this slider.
+				evt_names.evt_get_all_values = 'evtSliderGetAllValues' + scope.slider_id;		//The event you must broadcast to read all values from this slider.
+				evt_names.evt_return_all_values = 'evtSliderReturnAllValues' + scope.slider_id;	//The event you must listen for to read all values from this slider.
+				evt_names.evt_set_value = 'evtSliderSetValue' + scope.slider_id;				//The event you must broadcast to set a value on the slider
+				evt_names.evt_init_slider = 'evtInitSlider' + scope.slider_id;					//The event you must broadcast to re-initialize the slider.
+				evt_names.evt_init_slider_finished = 'evtSliderInitialized' + scope.slider_id;	//This event is emitted when the slider is done initializing.
+				
+				//Remove event listeners on the old event names
+				evt_deregister.evt_get_value();
+				evt_deregister.evt_get_all_values();
+				evt_deregister.evt_set_value();
+				evt_deregister.evt_init_slider();
+				
+				//Register events with the new event names and update the deregister functions
+				
+				//Get a value
+				evt_deregister.evt_get_value = scope.$on(evt_names.evt_get_value, function(evt, params)
+				{
+					//params
+						//handle				//Index of the handle whose value should be returned. Handles are zero-indexed and arranged in ascending order from left to right.
+					//Note: if params.handle isn't defined, the first handle's value will be returned.
+					var handle = 0;
+					if(params && params.handle)
+					{
+						handle = params.handle;
+					}
+					
+					scope.$emit(evt_names.evt_return_value, {'value': scope.handles[handle].return_value});
+				});
+				
+				//Get all values. ALWAYS returns the values in an array. Period.
+				evt_deregister.evt_get_all_values = scope.$on(evt_names.evt_get_all_values, function(evt, params)
+				{
+					var ret_array = [];
+					for(ii=0; ii < scope.handles.length; ii++)
+					{
+						ret_array[ii] = scope.handles[ii].return_value;
+					}
+					scope.$emit(evt_names.evt_return_all_values, {'values': ret_array});
+				});
+			
+				//Set a value
+				evt_deregister.evt_set_value = scope.$on(evt_names.evt_set_value, function(evt, params)
+				{
+					//params
+						//handle				//Index of handle whose value is to be set. Handles are zero-indexed and arranged in ascending order from left to right.
+						//value					//Value on the slider to give the handle. Must be a valid value.
+					//Note: if params.handle isn't defined, the first handle's value will be set.
+					
+					var handle = 0;
+					if(params && params.handle)
+					{
+						handle = params.handle;
+					}
+					setHandleValue(handle, params.value);
+				});
+			
+				//Init the slider
+				evt_deregister.evt_init_slider = scope.$on(evt_names.evt_init_slider, function(evt, params)
+				{
+					//Don't try to re-build the slider while it's being built.
+					if(building_slider === true)
+					{
+						building_queued = true;
+					}
+					else
+					{
+						initSlider();
+					}
+				});
+			
 			};
 			
 			//End Functions
@@ -1647,65 +1725,6 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			{
 				setJqueryTouch();
 			};
-			
-			
-			//Set up Interface
-			
-			//Get a value
-			scope.$on(evt_get_value, function(evt, params)
-			{
-				//params
-					//handle				//Index of the handle whose value should be returned. Handles are zero-indexed and arranged in ascending order from left to right.
-				//Note: if params.handle isn't defined, the first handle's value will be returned.
-				var handle = 0;
-				if(params && params.handle)
-				{
-					handle = params.handle;
-				}
-				
-				scope.$emit(evt_return_value, {'value': scope.handles[handle].return_value});
-			});
-			
-			//Get all values. ALWAYS returns the values in an array. Period.
-			scope.$on(evt_get_all_values, function(evt, params)
-			{
-				var ret_array = [];
-				for(ii=0; ii < scope.handles.length; ii++)
-				{
-					ret_array[ii] = scope.handles[ii].return_value;
-				}
-				scope.$emit(evt_return_all_values, {'values': ret_array});
-			});
-			
-			//Set a value
-			scope.$on(evt_set_value, function(evt, params)
-			{
-				//params
-					//handle				//Index of handle whose value is to be set. Handles are zero-indexed and arranged in ascending order from left to right.
-					//value					//Value on the slider to give the handle. Must be a valid value.
-				//Note: if params.handle isn't defined, the first handle's value will be set.
-				
-				var handle = 0;
-				if(params && params.handle)
-				{
-					handle = params.handle;
-				}
-				setHandleValue(handle, params.value);
-			});
-			
-			//Init the slider
-			scope.$on(evt_init_slider, function(evt, params)
-			{
-				//Don't try to re-build the slider while it's being built.
-				if(building_slider === true)
-				{
-					building_queued = true;
-				}
-				else
-				{
-					initSlider();
-				}
-			});
 			
 			//Array checker. Returns true if the argument is a scalar array []. False otherwise.
 			//Included here in order to eliminate dependency on an external array library.
@@ -1721,11 +1740,15 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				}
 			};
 			
+			var old_slider_id = scope.slider_id;	//Remember the previous id, so we can deregister that slider if the id changes
+			
 			initSlider();	//Init the slider
 			
 			//Have to re-init if the id changes
 			attrs.$observe('sliderId', function(value)
 			{
+				jrgSliderService.remove(old_slider_id);		//Deregister the old slider with the service
+				old_slider_id = value;						//Remember this id in case it changes again
 				initSlider();
 			});
 			

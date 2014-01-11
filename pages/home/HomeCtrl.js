@@ -10,6 +10,7 @@ angular.module('myApp').controller('HomeCtrl', ['$scope', function($scope) {
 	$scope.opts1 = {};
 	would achieve the same result as the fully defined object below.
 	*/
+	$scope.slider_id1 = 'my-slider1';
 	$scope.opts1 = 
 	{
 		'num_handles': 1,
@@ -206,4 +207,31 @@ angular.module('myApp').controller('HomeCtrl', ['$scope', function($scope) {
 		'ticks_values_container_class': 'jrg-slider-directive-ticks-values-container',
 		'ticks_value_class': 'jrg-slider-directive-ticks-value',
 	};
+	
+	// Event interface testing code
+	/*
+	$scope.$on('evtSliderInitialized' + $scope.slider_id1, function(evt, params)
+	{
+		$scope.$broadcast('evtSliderSetValue' + $scope.slider_id1, {'handle' : 0, 'value': 50});
+		$scope.$broadcast('evtSliderGetValue' + $scope.slider_id1, {'handle' : 0});
+	});
+
+	$scope.$on('evtSliderReturnValue' + $scope.slider_id1, function(evt, params)
+	{
+		console.log(params.value);
+		$scope.slider_id1 = 'new_slider_id';
+		
+		$scope.$on('evtSliderInitialized' + $scope.slider_id1, function(evt, params)
+		{
+			$scope.$broadcast('evtSliderGetAllValues' + $scope.slider_id1);
+			
+		});
+		
+		$scope.$on('evtSliderReturnAllValues' + $scope.slider_id1, function(evt, params)
+		{
+			console.log(params);
+		});
+	});
+	*/
+	
 }]);
