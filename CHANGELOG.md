@@ -1,5 +1,14 @@
 Version numbers correspond to `bower.json` version
 
+# 2.0.1
+
+## Features
+
+## Bug Fixes
+- Interface events now work properly
+
+## Breaking Changes
+
 # 2.0.0
 
 ## Features
