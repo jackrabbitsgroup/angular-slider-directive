@@ -40,6 +40,9 @@ angular.module('myApp').controller('HomeCtrl', ['$scope', function($scope) {
 		'ticks_value_class': 'jrg-slider-directive-ticks-value',
 	};
 	
+	var evtSetSliderValue = 'evtSliderSetValue' + $scope.slider_id1;
+	$scope.$broadcast(evtSetSliderValue, {'handle' : 0, 'value' :10});
+	
 	$scope.opts2 = 
 	{
 		'num_handles': 2,
