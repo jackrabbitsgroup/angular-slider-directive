@@ -559,8 +559,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			};
 			
 			scale_function_poly = jrgPolynomial.stringToPoly('[1, 1]');	//Init to identity, avoid undefined errors.
-			
-			
+
 			//Initialize and build the slider. Can't allow values to change during computation.
 			//	If an attempt is made to re-init the slider while it is in the process of building,
 			//	building_queued will be set to true, and the slider will re-init again upon completion.
@@ -655,7 +654,9 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					scope.$emit(evt_names.evt_init_slider_finished, {'id':scope.slider_id, 'values':scope.handle_values});
 				}
 			};
-			
+			scope.$watch('slider_opts', function(newVal) {
+				initSlider()
+			})
 			//Setup Functions
 			
 			var parseData = function()
@@ -1704,7 +1705,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 				evt_deregister.evt_init_slider = scope.$on(evt_names.evt_init_slider, function(evt, params)
 				{
 					//Don't try to re-build the slider while it's being built.
-					if(building_slider === true)
+					if(building_slider)
 					{
 						building_queued = true;
 					}
