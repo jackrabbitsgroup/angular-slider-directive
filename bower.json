@@ -24,10 +24,10 @@
     "slider-directive.css"
   ],
 	"dependencies": {
-		"angular":"1.6.8",
-		"angular-animate":"1.6.8",
-		"angular-sanitize":"1.6.8",
-		"angular-touch":"1.6.8"
+		"angular":"~1.2.0",
+		"angular-animate":"~1.2.0",
+		"angular-sanitize":"~1.2.0",
+		"angular-touch":"~1.2.0"
 	},
 	"devDependencies": {
 	}
